@@ -6,8 +6,13 @@
 //
 
 import SwiftUI
+import SwiftUICharts
 
 struct ContentView: View {
+    @EnvironmentObject var transactionListVM: TransactionListViewModel
+    
+//    var demoData: [Double] = [8, 3, 4, 6, 12, 9, 2]
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -15,6 +20,27 @@ struct ContentView: View {
                     // Title
                     Text("Overview")
                         .font(.largeTitle).bold()
+                    
+                    let data = transactionListVM.accumulateTransactions()
+                    
+                    if !data.isEmpty {
+                        let totalExpenses = data.last?.1 ?? 0
+                        
+                        CardView(showShadow: false) {
+                            
+                            VStack(alignment: .leading) {
+                                ChartLabel(totalExpenses.formatted(.currency(code: "GBP")), type: .title, format: "£%.02f")
+                                    .padding(.leading, 8)
+                                
+                                LineChart()
+                            }
+                            .background(Color("backgroundSecondary"))
+                            .cornerRadius(20)
+                        }
+                        .data(data)
+                        .chartStyle(ChartStyle(backgroundColor: Color.systemBackground, foregroundColor: ColorGradient(Color.icon.opacity(0.4), Color.icon)))
+                        .frame(height: 300)
+                    }
                     
                     RecentTransactionList()
                 }
@@ -33,6 +59,7 @@ struct ContentView: View {
             }
         }
         .navigationViewStyle(.stack)
+//        .accentColor(.primary)
     }
 }
 

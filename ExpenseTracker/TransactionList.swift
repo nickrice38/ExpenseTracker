@@ -21,6 +21,7 @@ struct TransactionList: View {
                     } header: {
                         Text(month)
                     }
+                    .listRowBackground(Color("backgroundSecondary"))
                     .listSectionSeparator(.hidden)
                 }
             }
