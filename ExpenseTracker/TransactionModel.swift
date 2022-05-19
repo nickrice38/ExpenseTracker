@@ -27,6 +27,7 @@ struct Transaction: Identifiable, Decodable, Hashable {
         if let category = Category.all.first(where: { $0.id == categoryId }) {
             return category.icon
         }
+        
         return .question
     }
     
@@ -41,6 +42,14 @@ struct Transaction: Identifiable, Decodable, Hashable {
     var month: String {
         dateParsed.formatted(.dateTime.year().month(.wide))
     }
+    
+    var categoryItem: Category {
+        if let category = Category.all.first(where: { $0.id == categoryId }) {
+            return category
+        }
+        
+        return .shopping
+    }
 }
 
 enum TransactionType: String {
@@ -48,11 +57,15 @@ enum TransactionType: String {
     case credit = "credit"
 }
 
-struct Category {
+struct Category: Identifiable {
     let id: Int
     let name: String
     let icon: FontAwesomeCode
     var mainCategoryId: Int?
+    
+    var subcategories: [Category]? {
+        Category.subCategories.filter { $0.mainCategoryId == id }
+    }
 }
 
 extension Category {
@@ -65,7 +78,7 @@ extension Category {
     static let income = Category(id: 7, name: "Income", icon: .dollar_sign)
     static let shopping = Category(id: 8, name: "Shopping", icon: .shopping_cart)
     static let transfer = Category(id: 9, name: "Transfer", icon: .exchange_alt)
-
+    
     static let publicTransportation = Category(id: 101, name: "Public Transportation", icon: .bus, mainCategoryId: 1)
     static let taxi = Category(id: 102, name: "Taxi", icon: .taxi, mainCategoryId: 1)
     static let mobilePhone = Category(id: 201, name: "Mobile Phone", icon: .mobile_alt, mainCategoryId: 2)
@@ -93,7 +106,7 @@ extension Category {
         .shopping,
         .transfer
     ]
-
+    
     static let subCategories: [Category] = [
         .publicTransportation,
         .taxi,
@@ -109,6 +122,6 @@ extension Category {
         .software,
         .creditCardPayment
     ]
-
+    
     static let all: [Category] = categories + subCategories
 }
